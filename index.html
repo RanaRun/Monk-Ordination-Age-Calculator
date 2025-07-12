@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្មវិធីគណនាអាយុសម្រាប់បួសភិក្ខុ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 90%;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-blue-800 mb-6 rounded-md p-2 bg-blue-50">
+            កម្មវិធីគណនាអាយុសម្រាប់បួសភិក្ខុ
+        </h1>
+
+        <div class="mb-4">
+            <label for="dob" class="block text-gray-700 text-sm font-bold mb-2">
+                ថ្ងៃខែឆ្នាំកំណើត:
+            </label>
+            <input type="date" id="dob" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" required>
+        </div>
+
+        <div class="mb-6">
+            <label for="assessmentDate" class="block text-gray-700 text-sm font-bold mb-2">
+                ថ្ងៃដែលត្រូវគិតអាយុ:
+            </label>
+            <input type="date" id="assessmentDate" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" required>
+        </div>
+
+        <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out transform hover:scale-105">
+            គណនាអាយុ
+        </button>
+
+        <div id="loadingIndicator" class="hidden text-center mt-4 text-gray-600">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 inline-block"></div>
+            កំពុងគណនា...
+        </div>
+
+        <div id="result" class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+            <h2 class="text-xl font-semibold text-blue-700 mb-2">លទ្ធផល:</h2>
+            <p id="calculatedAge" class="text-gray-800 text-lg"></p>
+            <p id="eligibility" class="mt-2 text-lg font-bold"></p>
+        </div>
+
+        <div id="errorBox" class="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden">
+            <p id="errorMessage"></p>
+        </div>
+
+        <!-- How to Count Section -->
+        <div class="mt-6">
+            <button id="toggleHowToCount" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out">
+                របៀបរាប់អាយុ (ចុចដើម្បីបង្ហាញ/លាក់)
+            </button>
+            <div id="howToCountContent" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg hidden">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">គោលការណ៍គណនាអាយុសម្រាប់បួសភិក្ខុ (តាមខ្មែរសុទ្ធ)</h3>
+                <p class="text-gray-700 mb-2">ការគណនាអាយុសម្រាប់បំពេញលក្ខខណ្ឌបួសភិក្ខុ (ឧបសម្បទា) គឺតម្រូវឲ្យមានអាយុគ្រប់ ២០ ឆ្នាំបរិបូណ៌។ ការគណនានេះរាប់បញ្ចូលកត្តា ៣ យ៉ាងសំខាន់ៗ៖</p>
+
+                <ol class="list-decimal list-inside text-gray-700 space-y-2">
+                    <li>
+                        <span class="font-semibold">អាយុមូលដ្ឋាន (ពីថ្ងៃកើតដល់ថ្ងៃកំណត់):</span>
+                        <p class="ml-4">នេះគឺជាចំនួនថ្ងៃសរុបដែលបុគ្គលនោះបានរស់នៅ ចាប់ពីថ្ងៃកើតរហូតដល់ថ្ងៃដែលត្រូវគិតអាយុ។ កម្មវិធីនឹងគណនាគម្លាតថ្ងៃនេះជាមុនសិន។</p>
+                    </li>
+                    <li>
+                        <span class="font-semibold">អាយុក្នុងផ្ទៃមាតា:</span>
+                        <p class="ml-4">តាមប្រពៃណីព្រះពុទ្ធសាសនាថេរវាទ (ដែលអនុវត្តនៅកម្ពុជា) គេរាប់បញ្ចូលអាយុដែលបុគ្គលនោះស្ថិតនៅក្នុងផ្ទៃមាតាប្រមាណ ៩ ខែ (ចន្ទគតិ)។ ចំនួននេះត្រូវបានបូកបន្ថែមទៅក្នុងអាយុសរុប។</p>
+                    </li>
+                    <li>
+                        <span class="font-semibold">ខែអធិកមាស (ខែបន្ថែម):</span>
+                        <p class="ml-4">ប្រតិទិនចន្ទគតិខ្មែរមានខែបន្ថែម (អធិកមាស) រៀងរាល់ប្រហែល ៣ ឆ្នាំម្តង (៧ ដងក្នុងវដ្ដ ១៩ ឆ្នាំ) ដើម្បីកែសម្រួលតុល្យភាពរវាងឆ្នាំចន្ទគតិ និងឆ្នាំសុរិយគតិ។ ឆ្នាំណាដែលមានអធិកមាស គឺឆ្នាំនោះមាន ១៣ ខែចន្ទគតិ។ កម្មវិធីនឹងរាប់ចំនួនឆ្នាំអធិកមាសដែលធ្លាក់ក្នុងចន្លោះអាយុរបស់អ្នក ហើយបូកបន្ថែម ១ ខែចន្ទគតិសម្រាប់ឆ្នាំអធិកមាសនីមួយៗ។</p>
+                    </li>
+                </ol>
+
+                <p class="text-gray-700 mt-4">លទ្ធផលចុងក្រោយនឹងបង្ហាញជាឆ្នាំ ខែ និងថ្ងៃ តាមប្រព័ន្ធចន្ទគតិខ្មែរ។</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // កំណត់ឆ្នាំអធិកមាស (ឆ្នាំដែលមាន 13 ខែចន្ទគតិ) ជាឆ្នាំពុទ្ធសករាជ (ព.ស.)
+        // ឆ្នាំទាំងនេះត្រូវបានកំណត់តាមការគណនាប្រតិទិនចន្ទគតិខ្មែរ
+        const adhikamasaBEYears = [
+            2524, 2527, 2530, 2533, 2536, 2539, 2542, 2545, 2548, 2551,
+            2554, 2557, 2560, 2566, 2569, 2572, 2575, 2578, 2581, 2584, 2587, 2590
+        ];
+
+        // តម្លៃមធ្យមនៃថ្ងៃក្នុងមួយខែចន្ទគតិ និងឆ្នាំចន្ទគតិ
+        const DAYS_PER_LUNAR_MONTH = 29.530588;
+        const DAYS_PER_LUNAR_YEAR = 354.367056; // 12 * DAYS_PER_LUNAR_MONTH
+
+        // មុខងារសម្រាប់គណនាភាពខុសគ្នារវាងកាលបរិច្ឆេទជាថ្ងៃ (ដោយប្រើ Date object សម្រាប់ភាពងាយស្រួល)
+        // ចំណាំ៖ ការគណនាថ្ងៃសរុបនេះប្រើប្រព័ន្ធសុរិយគតិរបស់ JavaScript ប៉ុន្តែលទ្ធផលនឹងត្រូវបំប្លែងទៅជាឯកតាចន្ទគតិ។
+        function getDaysDifference(startDate, endDate) {
+            const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // មុខងារគណនាអាយុសម្រាប់បួសភិក្ខុ (តាមខ្មែរសុទ្ធ)
+        function calculateAgeForOrdination() {
+            const dobInput = document.getElementById('dob');
+            const assessmentDateInput = document.getElementById('assessmentDate');
+            const resultDiv = document.getElementById('result');
+            const calculatedAgeP = document.getElementById('calculatedAge');
+            const eligibilityP = document.getElementById('eligibility');
+            const errorBox = document.getElementById('errorBox');
+            const errorMessage = document.getElementById('errorMessage');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            // លាក់លទ្ធផល និងកំហុសពីមុន
+            resultDiv.classList.add('hidden');
+            errorBox.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+
+            const dobStr = dobInput.value;
+            const assessmentDateStr = assessmentDateInput.value;
+
+            if (!dobStr || !assessmentDateStr) {
+                errorMessage.textContent = 'សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើត និងថ្ងៃដែលត្រូវគិតអាយុ។';
+                errorBox.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                return;
+            }
+
+            const dob = new Date(dobStr);
+            const assessmentDate = new Date(assessmentDateStr);
+
+            if (dob > assessmentDate) {
+                errorMessage.textContent = 'ថ្ងៃខែឆ្នាំកំណើតមិនអាចធំជាងថ្ងៃដែលត្រូវគិតអាយុបានទេ។';
+                errorBox.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                return;
+            }
+
+            // 1. គណនាអាយុមូលដ្ឋានជាថ្ងៃ (ដោយប្រើ Date object សម្រាប់ភាពងាយស្រួល)
+            let totalDays = getDaysDifference(dob, assessmentDate);
+
+            // 2. បន្ថែមអាយុក្នុងផ្ទៃមាតា (9 ខែចន្ទគតិ)
+            const wombDays = 9 * DAYS_PER_LUNAR_MONTH;
+            totalDays += wombDays;
+
+            // 3. បន្ថែមខែអធិកមាស (1 ខែចន្ទគតិសម្រាប់ឆ្នាំអធិកមាសនីមួយៗ)
+            let countAdhikamasa = 0;
+            // រាប់ឆ្នាំពុទ្ធសករាជ (ព.ស.) ក្នុងចន្លោះ
+            const dobBEYear = dob.getFullYear() + 543;
+            const assessmentBEYear = assessmentDate.getFullYear() + 543;
+
+            // រាប់ចំនួនឆ្នាំអធិកមាសដែលធ្លាក់ក្នុងចន្លោះឆ្នាំព.ស. ទាំងមូល
+            // ចំណាំ៖ វិធីសាស្ត្រនេះរាប់ឆ្នាំអធិកមាសទាំងមូលដែលធ្លាក់ក្នុងចន្លោះឆ្នាំ គ.ស. នៃថ្ងៃកំណើត និងថ្ងៃគិតអាយុ
+            // សម្រាប់ភាពជាក់លាក់ដាច់ខាតតាមចន្ទគតិ គឺទាមទារប្រព័ន្ធបម្លែងប្រតិទិនចន្ទគតិពេញលេញ។
+            for (let beYear = dobBEYear; beYear <= assessmentBEYear; beYear++) {
+                if (adhikamasaBEYears.includes(beYear)) {
+                    countAdhikamasa++;
+                }
+            }
+            const adhikamasaDays = countAdhikamasa * DAYS_PER_LUNAR_MONTH;
+            totalDays += adhikamasaDays;
+
+            // 4. បំប្លែងថ្ងៃសរុបទៅជាឆ្នាំ ខែ និងថ្ងៃចន្ទគតិ
+            let finalYears = Math.floor(totalDays / DAYS_PER_LUNAR_YEAR);
+            let remainingDaysAfterYears = totalDays % DAYS_PER_LUNAR_YEAR;
+
+            let finalMonths = Math.floor(remainingDaysAfterYears / DAYS_PER_LUNAR_MONTH);
+            let finalDays = Math.round(remainingDaysAfterYears % DAYS_PER_LUNAR_MONTH); // ប្រើ round ដើម្បីជៀសវាងលេខទសភាគតូច
+
+            // លក្ខខណ្ឌសម្រាប់បួសភិក្ខុ: គ្រប់ 20 ឆ្នាំបរិបូណ៌
+            const isEligible = finalYears >= 20;
+
+            calculatedAgeP.textContent = `អាយុសរុប: ${finalYears} ឆ្នាំ ${finalMonths} ខែ និង ${finalDays} ថ្ងៃ (តាមចន្ទគតិ)`;
+            if (isEligible) {
+                eligibilityP.textContent = 'អ្នកបានគ្រប់អាយុ ២០ ឆ្នាំបរិបូណ៌ហើយ អាចបួសភិក្ខុបាន។';
+                eligibilityP.classList.remove('text-red-600');
+                eligibilityP.classList.add('text-green-600');
+            } else {
+                eligibilityP.textContent = 'អ្នកនៅមិនទាន់គ្រប់អាយុ ២០ ឆ្នាំបរិបូណ៌ទេ មិនទាន់អាចបួសភិក្ខុបានទេ។';
+                eligibilityP.classList.remove('text-green-600');
+                eligibilityP.classList.add('text-red-600');
+            }
+
+            loadingIndicator.classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+        }
+
+        document.getElementById('calculateBtn').addEventListener('click', calculateAgeForOrdination);
+
+        // Toggle How to Count section
+        document.getElementById('toggleHowToCount').addEventListener('click', function() {
+            const content = document.getElementById('howToCountContent');
+            content.classList.toggle('hidden');
+        });
+
+        // កំណត់ថ្ងៃបច្ចុប្បន្នជាលំនាំដើមសម្រាប់ថ្ងៃដែលត្រូវគិតអាយុ
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('assessmentDate').value = `${year}-${month}-${day}`;
+        });
+    </script>
+</body>
+</html>
